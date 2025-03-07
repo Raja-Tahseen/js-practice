@@ -3,10 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Hover Background Change</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding-top: 50px;
+        transition: background-color 0.5s ease;
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+    </style>
   </head>
   <body>
-    <h1 id="title">My name is Usman Khalil</h1>
+    <button id="hoverButton">Hover Over Me</button>
+
+    <script>
+      const button = document.getElementById("hoverButton");
+      const body = document.body;
+      // const originalColor = window.getComputedStyle(body).backgroundColor;
+      const originalColor = (body.style.backgroundColor = "green");
+
+      button.addEventListener("mouseover", () => {
+        body.style.backgroundColor = "black";
+        body.style.color = "white"; // Optional: Change text color for better visibility
+      });
+
+      button.addEventListener("mouseout", () => {
+        body.style.backgroundColor = originalColor;
+        body.style.color = ""; // Reset text color
+      });
+    </script>
   </body>
-  <script src="./index.js"></script>
 </html>
