@@ -77,3 +77,24 @@ function toMaxTwoDecimals(num) {
 }
 console.log(toMaxTwoDecimals(3.456)); // 3.46
 console.log(toMaxTwoDecimals(2.4)); // 2.4
+
+//#########################
+// 3 - [Exploring Javascript Objects]
+
+//#########################
+// 4 - [Javascript Math]
+
+//1. Make a head/tails program.
+function flipCoin() {
+  // Returns "Heads" or "Tails" randomly
+  return Math.random() < 0.5 ? "Heads" : "Tails";
+}
+console.log(flipCoin()); // Output: "Heads" or "Tails"
+
+//2. What's the difference between ceil and floor
+//Rounds a number up to the nearest integer.
+Math.ceil(4.2); // 5
+Math.ceil(9.001); // 10
+//Rounds a number down to the nearest integer.
+Math.floor(4.7); // 4
+Math.floor(9.999); // 9
