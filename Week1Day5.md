@@ -100,6 +100,178 @@ To calculate the number of words in a string, you can split the string into an a
 
 ### Example
 
+## 1. length
+
+**Use Case**: Validate password length during user registration.
+
+```javascript
+
+function validatePassword(password) {
+
+if (password.length >= 8) return "Valid";
+
+else return "Password must be at least 8 characters!";
+
+}
+
+console.log(validatePassword("1234")); // Output: Invalid
+
+```
+
+## 2. charAt(index)
+
+**Use Case**: Capitalize the first letter of a username for display.
+
+```javascript
+
+const username = "john";
+
+const formattedName = username.charAt(0).toUpperCase() + username.slice(1);
+
+console.log(formattedName); // Output: "John"
+
+```
+
+## 3. concat
+
+**Use Case**: Dynamically generate API endpoints by combining a base URL with a path.
+
+```javascript
+
+const baseUrl = "https://api.example.com";
+
+const endpoint = "/users";
+
+const fullUrl = baseUrl.concat(endpoint); // "https://api.example.com/users"
+
+```
+
+## 4. `includes`
+
+**Use Case**: Filter unread emails in an inbox by checking for "[UNREAD]" in the subject.
+
+```javascript
+
+const emails = ["[UNREAD] Meeting", "Promotion", "[UNREAD] Newsletter"];
+
+const unread = emails.filter(email => email.includes("[UNREAD]"));
+
+// Output: ["[UNREAD] Meeting", "[UNREAD] Newsletter"]
+
+```
+
+---
+
+## 5. `indexOf(substring)`
+
+**Use Case**: Extract query parameters from a URL.
+
+```javascript
+
+const url = "https://example.com?search=javascript";
+
+const queryIndex = url.indexOf("?");
+
+const query = url.slice(queryIndex + 1); // "search=javascript"
+
+```
+
+---
+
+## 6. `slice(start, end)`
+
+**Use Case**: Display a truncated credit card number for security (e.g., "--****-1234").
+
+```javascript
+
+const cardNumber = "4111111111111234";
+
+const masked = "****-****-****-" + cardNumber.slice(-4);
+
+console.log(masked); // "****-****-****-1234"
+
+```
+
+---
+
+## 7. `substring(start, end)`
+
+**Use Case**: Format phone numbers (e.g., "+1 (555) 123-4567" → "555-123-4567").
+
+```javascript
+
+const phone = "+1 (555) 123-4567";
+
+const cleaned = phone.substring(4, 7) + "-" + phone.substring(9, 12) + "-" + phone.substring(13);
+
+// Output: "555-123-4567"
+
+```
+
+---
+## 8. `replace(searchValue, replaceValue)`
+**Use Case**: Redact sensitive information like credit card numbers in logs.
+
+```javascript
+
+const log = "User paid with card 4111-1111-1111-1111";
+const redacted = log.replace(/\d{4}-\d{4}-\d{4}-\d{4}/, "****-****-****-****");
+// Output: "User paid with card ****-****-****-****"
+```
+
+---
+## 9. `toLowerCase()`
+**Use Case**: Case-insensitive username comparison during login..
+
+```javascript
+
+const storedUsername = "JohnDoe";
+const inputUsername = "johndoe";
+if (storedUsername.toLowerCase() === inputUsername.toLowerCase()) {
+  console.log("Login successful!");
+}
+
+```
+
+---
+## 10. `split(separator)`
+**Use Case**: Parse CSV data into an array of objects.
+
+```javascript
+
+const csv = "Name,Age,Location\nAlice,30,Paris\nBob,25,London";
+const rows = csv.split("\n");
+const headers = rows[0].split(","); // ["Name", "Age", "Location"]
+}
+
+```
+
+---
+## 11. `startsWith(substring)`
+**Use Case**: Route HTTP requests based on URL paths (e.g., in a web server).
+
+```javascript
+
+const url = "/api/users/123";
+if (url.startsWith("/api")) {
+  handleAPIRequest(url); // Route to API handler
+} else {
+  serveStaticFile(url); // Serve HTML/CSS
+}
+
+```
+
+---
+## 12. `match(regexp)`
+**Use Case**: Extract hashtags from a social media post.
+
+```javascript
+
+const post = "Loving #JavaScript and #WebDev!";
+const hashtags = post.match(/#\w+/g); // ["#JavaScript", "#WebDev"]
+
+```
+
 ```javascript
 const str = "A quick brown fox jumps over a lazy dog";
 const wordCount = str.split(" ").length;
