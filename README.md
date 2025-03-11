@@ -201,5 +201,3 @@ console.log(result); // Output: 30 (a number)
 - **Number + String**: Results in string concatenation due to type coercion.
 
 ---
-
-You can save this as `javascript-concepts.md` and upload it to GitHub. Let me know if you need further assistance! 😊
