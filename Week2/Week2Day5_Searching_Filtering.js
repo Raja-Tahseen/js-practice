@@ -42,6 +42,7 @@ function addTodo(text) {
   todos.push({
     id: ++idCounter,
     text: text,
+    taskStatus: "uncompleted",
     checked: false,
   });
   console.log(todos);
@@ -51,7 +52,7 @@ function addTodo(text) {
 //spread operator (...) copies all properties from the todo object into the new object. Then, the text property is updated new value passed.
 function updateTodo(text) {
   todos = todos.map(
-    (todo) => (todo.id === currentEditingId ? { ...todo, text } : todo)
+    (todo) => (todo.id === currentEditingId ? { ...todo, text: text } : todo)
     //(todo) => todo.id === currentEditingId ? { ...todo, text: text, id: 69, checked: true } : todo
   );
   actionBtn.textContent = "Add";
@@ -66,6 +67,13 @@ function deleteTodo(id) {
     actionBtn.textContent = "Add";
     currentEditingId = null;
   }
+}
+
+function updateTaskStatus(id, taskStatus) {
+  todos = todos.map((todo) =>
+    todo.id == id ? { ...todo, taskStatus: taskStatus } : todo
+  );
+  console.log(todos);
 }
 
 function toggleCheck(id) {
@@ -104,7 +112,20 @@ function renderTodos() {
       option.textContent = optionText;
       select.appendChild(option);
     });
-    select.value = "uncompleted";
+    //select.value = "uncompleted";
+    select.value = todo.taskStatus;
+    select.addEventListener("change", function (event) {
+      //   const selectedValue = event.target.value;
+      //   console.log("Selected value:", selectedValue);
+      //   console.log("ToDO List:", todos);
+      //   console.log("currentEditingId:", currentEditingId);
+      //   let toDoId = todo.id;
+      updateTaskStatus(todo.id, event.target.value);
+      renderTodos();
+      //   todos = todos.map((todo) =>
+      //     todo.id === toDoId ? { ...todo, taskStatus: selectedValue } : todo
+      //   );
+    });
 
     // Edit Button
     const editBtn = document.createElement("button");
