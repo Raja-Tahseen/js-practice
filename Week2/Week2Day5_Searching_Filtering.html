@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo List with Data Storage</title>
+    <style>
+      .container {
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 20px;
+      }
+      #todoInput {
+        width: 50%;
+        padding: 8px;
+        margin-right: 5px;
+      }
+      #todoInputSearch {
+        width: 30%;
+        padding: 8px;
+        margin-right: 5px;
+      }
+      button {
+        padding: 8px 15px;
+        cursor: pointer;
+      }
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      li {
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #ddd;
+        display: flex;
+        align-items: center;
+      }
+      .todo-text {
+        flex-grow: 1;
+        margin: 0 10px;
+      }
+      .completed {
+        text-decoration: line-through;
+        color: #888;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <input type="text" id="todoInput" placeholder="Enter a new todo" />
+      <button id="actionBtn">Add</button>
+      <input
+        type="search"
+        id="todoInputSearch"
+        onkeyup="handleSearch()"
+        placeholder="Search for tasks.."
+        title="Type in a task"
+      />
+      <ul id="todoList"></ul>
+    </div>
+    <script src="Week2Day5_Searching_Filtering.js"></script>
+  </body>
+</html>
