@@ -94,6 +94,18 @@ function renderTodos() {
     span.className = `todo-text ${todo.checked ? "completed" : ""}`;
     span.textContent = todo.text;
 
+    //Dropdown || Select
+    const select = document.createElement("select");
+    const options = ["all", "completed", "uncompleted"];
+
+    options.forEach((optionText) => {
+      const option = document.createElement("option");
+      option.value = optionText;
+      option.textContent = optionText;
+      select.appendChild(option);
+    });
+    select.value = "uncompleted";
+
     // Edit Button
     const editBtn = document.createElement("button");
     editBtn.textContent = "Edit";
@@ -114,6 +126,7 @@ function renderTodos() {
     // Assemble elements
     li.appendChild(checkbox);
     li.appendChild(span);
+    li.appendChild(select);
     li.appendChild(editBtn);
     li.appendChild(deleteBtn);
 
