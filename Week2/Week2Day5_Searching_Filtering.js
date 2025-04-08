@@ -40,9 +40,13 @@ function handleAction() {
   renderTodos(todos);
 }
 
+const getRandomId = () => {
+  return Date.now();
+};
+
 function addTodo(text) {
   todos.push({
-    id: ++idCounter,
+    id: getRandomId(),
     text: text,
     taskStatus: "uncompleted",
     checked: false,
