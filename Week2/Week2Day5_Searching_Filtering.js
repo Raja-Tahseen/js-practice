@@ -17,10 +17,11 @@ function handleSearch(event) {
 
 searchBtn.onclick = (event) => {
   searchToDo = todos.filter((t) => t.text.includes(todoInputSearch.value));
-  if (taskStatus.value !== "All") {
-    searchToDo = searchToDo.filter(
-      (t) => t.taskStatus.toLowerCase() === taskStatus.value.toLowerCase()
-    );
+  if (taskStatus.value === "Completed") {
+    searchToDo = searchToDo.filter((t) => t.checked === true);
+  }
+  if (taskStatus.value === "Uncompleted") {
+    searchToDo = searchToDo.filter((t) => t.checked === false);
   }
   renderTodos(searchToDo);
 };
@@ -48,7 +49,7 @@ function addTodo(text) {
   todos.push({
     id: getRandomId(),
     text: text,
-    taskStatus: "uncompleted",
+    // taskStatus: "uncompleted",
     checked: false,
   });
 }
@@ -80,7 +81,7 @@ function toggleCheck(id) {
       ? {
           ...todo,
           checked: !todo.checked,
-          taskStatus: todo.checked ? "uncompleted" : "completed",
+          // taskStatus: todo.checked ? "uncompleted" : "completed",
         }
       : todo
   );
@@ -109,7 +110,7 @@ function renderTodos(tasks) {
     // Task Status
     const spanStatus = document.createElement("span");
     spanStatus.className = `todo-status ${todo.checked ? "completed" : ""}`;
-    spanStatus.textContent = todo.taskStatus;
+    spanStatus.textContent = todo.checked ? "Completed" : "Uncompleted";
 
     // Edit Button
     const editBtn = document.createElement("button");
