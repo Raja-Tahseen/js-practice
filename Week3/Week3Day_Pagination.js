@@ -2,27 +2,26 @@ const todoInput = document.getElementById("todoInput");
 const todoInputSearch = document.getElementById("todoInputSearch");
 const actionBtn = document.getElementById("actionBtn");
 const todoList = document.getElementById("todoList");
-const taskStatus = document.getElementById("status");
-const searchBtn = document.getElementById("searchBtn");
 let currentEditingId = null;
-let idCounter = 0;
 let todos = [];
-let searchToDo = [];
+let idCounter = 0;
 
 todoInputSearch.addEventListener("search", handleSearch); //Event is called when user click 'X' inside search input box
-
 function handleSearch(event) {
-  renderTodos(todos);
+  //alert("qwerty");
+  let filter, li, span, txtValue;
+  filter = todoInputSearch.value.toUpperCase();
+  li = todoList.getElementsByTagName("li");
+  for (i = 0; i < li.length; i++) {
+    span = li[i].getElementsByTagName("span")[0];
+    txtValue = span.textContent || span.innerText;
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      li[i].style.display = "";
+    } else {
+      li[i].style.display = "none";
+    }
+  }
 }
-
-searchBtn.onclick = (event) => {
-  searchToDo = todos.filter(
-    (t) =>
-      t.text.includes(todoInputSearch.value) &&
-      t.taskStatus.toLowerCase() === taskStatus.value.toLowerCase()
-  );
-  renderTodos(searchToDo);
-};
 
 actionBtn.addEventListener("click", handleAction);
 
@@ -36,7 +35,7 @@ function handleAction() {
     updateTodo(text);
   }
   todoInput.value = "";
-  renderTodos(todos);
+  renderTodos();
 }
 
 function addTodo(text) {
@@ -46,13 +45,15 @@ function addTodo(text) {
     taskStatus: "uncompleted",
     checked: false,
   });
+  console.log(todos);
 }
 
 //map() returns a new array by applying a function to each element of the original array.
 //spread operator (...) copies all properties from the todo object into the new object. Then, the text property is updated new value passed.
 function updateTodo(text) {
-  todos = todos.map((todo) =>
-    todo.id === currentEditingId ? { ...todo, text: text } : todo
+  todos = todos.map(
+    (todo) => (todo.id === currentEditingId ? { ...todo, text: text } : todo)
+    //(todo) => todo.id === currentEditingId ? { ...todo, text: text, id: 69, checked: true } : todo
   );
   actionBtn.textContent = "Add";
   currentEditingId = null;
@@ -66,32 +67,25 @@ function deleteTodo(id) {
     actionBtn.textContent = "Add";
     currentEditingId = null;
   }
-  renderTodos(todos);
 }
 
 function updateTaskStatus(id, taskStatus) {
   todos = todos.map((todo) =>
     todo.id == id ? { ...todo, taskStatus: taskStatus } : todo
   );
+  console.log(todos);
 }
 
 function toggleCheck(id) {
   todos = todos.map((todo) =>
-    todo.id === id
-      ? {
-          ...todo,
-          checked: !todo.checked,
-          taskStatus: todo.checked ? "uncompleted" : "completed",
-        }
-      : todo
+    todo.id === id ? { ...todo, checked: !todo.checked } : todo
   );
-  renderTodos(todos);
 }
 
-function renderTodos(tasks) {
+function renderTodos() {
   todoList.innerHTML = "";
 
-  tasks.forEach((todo) => {
+  todos.forEach((todo) => {
     const li = document.createElement("li");
 
     // Checkbox
@@ -100,6 +94,7 @@ function renderTodos(tasks) {
     checkbox.checked = todo.checked;
     checkbox.addEventListener("change", () => {
       toggleCheck(todo.id);
+      renderTodos();
     });
 
     // Todo Text
@@ -107,15 +102,34 @@ function renderTodos(tasks) {
     span.className = `todo-text ${todo.checked ? "completed" : ""}`;
     span.textContent = todo.text;
 
-    // Task Status
-    const spanStatus = document.createElement("span");
-    spanStatus.className = `todo-status ${todo.checked ? "completed" : ""}`;
-    spanStatus.textContent = todo.taskStatus;
+    //Dropdown || Select
+    const select = document.createElement("select");
+    const options = ["all", "completed", "uncompleted"];
+
+    options.forEach((optionText) => {
+      const option = document.createElement("option");
+      option.value = optionText;
+      option.textContent = optionText;
+      select.appendChild(option);
+    });
+    //select.value = "uncompleted";
+    select.value = todo.taskStatus;
+    select.addEventListener("change", function (event) {
+      //   const selectedValue = event.target.value;
+      //   console.log("Selected value:", selectedValue);
+      //   console.log("ToDO List:", todos);
+      //   console.log("currentEditingId:", currentEditingId);
+      //   let toDoId = todo.id;
+      updateTaskStatus(todo.id, event.target.value);
+      renderTodos();
+      //   todos = todos.map((todo) =>
+      //     todo.id === toDoId ? { ...todo, taskStatus: selectedValue } : todo
+      //   );
+    });
 
     // Edit Button
     const editBtn = document.createElement("button");
     editBtn.textContent = "Edit";
-    editBtn.className = "editBtn";
     editBtn.addEventListener("click", () => {
       todoInput.value = todo.text;
       actionBtn.textContent = "Update";
@@ -127,12 +141,13 @@ function renderTodos(tasks) {
     deleteBtn.textContent = "Delete";
     deleteBtn.addEventListener("click", () => {
       deleteTodo(todo.id);
+      renderTodos();
     });
 
     // Assemble elements
     li.appendChild(checkbox);
     li.appendChild(span);
-    li.appendChild(spanStatus);
+    li.appendChild(select);
     li.appendChild(editBtn);
     li.appendChild(deleteBtn);
 
