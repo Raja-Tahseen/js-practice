@@ -16,11 +16,12 @@ function handleSearch(event) {
 }
 
 searchBtn.onclick = (event) => {
-  searchToDo = todos.filter(
-    (t) =>
-      t.text.includes(todoInputSearch.value) &&
-      t.taskStatus.toLowerCase() === taskStatus.value.toLowerCase()
-  );
+  searchToDo = todos.filter((t) => t.text.includes(todoInputSearch.value));
+  if (taskStatus.value !== "All") {
+    searchToDo = searchToDo.filter(
+      (t) => t.taskStatus.toLowerCase() === taskStatus.value.toLowerCase()
+    );
+  }
   renderTodos(searchToDo);
 };
 
