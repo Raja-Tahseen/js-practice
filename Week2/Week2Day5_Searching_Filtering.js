@@ -69,12 +69,6 @@ function deleteTodo(id) {
   renderTodos(todos);
 }
 
-function updateTaskStatus(id, taskStatus) {
-  todos = todos.map((todo) =>
-    todo.id == id ? { ...todo, taskStatus: taskStatus } : todo
-  );
-}
-
 function toggleCheck(id) {
   todos = todos.map((todo) =>
     todo.id === id
