@@ -1,9 +1,24 @@
 //--Problem - - Create Pagination
 //1 - - By default display first 10 records.
+// ---> Clear existing content in 'todoList' to start with fresh state.
+// ---> Calculate starting index e.g. Page 2 with tasksPerPage = 10 -> (2-1)*10 = 10.   Page 3 with tasksPerPage = 10 -> (3-1)*10 = 20.
+// ---> Calculate end index e.g. Page 2 with tasksPerPage = 10 -> 10 + 10 = 20.   Page 3 with tasksPerPage = 10 -> 20 + 10 = 30.
+// ---> Next simply extract tasks for the current page using todos.slice(start, end) [Returns items from index start to end-1]
+// ---> Then using foeach loop on extracted array objects, render tasks on screen as done in previuos assignment.
+
 //2 - - On Clicking "Next" Display 10 records from the current last record
+// ---> Prevent overflow (going beyond last page) by dynamically checking total pages on each click.
+
 //3 - - On Clicking "Prev" Display 10 previous records from the current first record
+// ---> Prevent underflow (going below page 1) by dynamically checking -> Math.max(1, currentPage - 1)  [Page number never goes below 1 after decrement]
+
 //4 - - On clicking "First"  display first ten records
+// ---> Sets currentPage to 1 unconditionally and calls renderTodos();
+
 //5 - - On clicking "Last"  display last ten records
+// ---> Calculate the last page dynamically by -> Math.ceil(todos.length / tasksPerPage)
+// ---> Example: For 100 tasks with 10 per page → page 10
+
 //6 - - Make number of records per page 10, 20, 50, 100
 
 // DOM Elements
@@ -42,7 +57,6 @@ function generateTasks() {
 }
 
 function toggleCheck(id) {
-  alert("ss");
   todos = todos.map((todo) =>
     todo.id === id
       ? {
@@ -63,7 +77,7 @@ function renderTodos() {
   const currentTasks = todos.slice(start, end);
 
   currentTasks.forEach((todo) => {
-    console.log(todo);
+    //console.log(todo);
     const li = document.createElement("li");
 
     // Checkbox
@@ -111,4 +125,27 @@ function renderTodos() {
     todoList.appendChild(li);
   });
 }
+
+// Event listeners
+firstBtn.addEventListener("click", () => {
+  currentPage = 1;
+  renderTodos();
+});
+
+prevBtn.addEventListener("click", () => {
+  currentPage = Math.max(1, currentPage - 1); //Page number never goes below 1, safely decerements current page
+  renderTodos();
+});
+
+nextBtn.addEventListener("click", () => {
+  const totalPages = Math.ceil(todos.length / tasksPerPage); //calculates total pages
+  currentPage = Math.min(totalPages, currentPage + 1); //Ensures page number never exceeds maximum & increments safely.
+  renderTodos();
+});
+
+lastBtn.addEventListener("click", () => {
+  currentPage = Math.ceil(todos.length / tasksPerPage);
+  renderTodos();
+});
+
 renderTodos();
