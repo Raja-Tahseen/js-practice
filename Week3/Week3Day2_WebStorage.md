@@ -1,4 +1,4 @@
-## Question 1. What is Local storage and also describe it's methods?
+# Question 1. What is Local storage and also describe it's methods?
 
 Local Storage is a web storage API that allows websites to store data persistently in a user's browser. Unlike session storage (which clears when the browser tab closes), local storage data has no expiration time and remains available until explicitly deleted.
 
@@ -107,7 +107,7 @@ Local Storage is great for persisting non-sensitive user preferences, caching da
 
 ##
 
-## Question 2. What is the difference between local storage and session storage?
+# Question 2. What is the difference between local storage and session storage?
 
 Both Local Storage and Session Storage are web storage APIs in JavaScript that allow you to store key-value pairs in the browser, but they have important differences:
 
