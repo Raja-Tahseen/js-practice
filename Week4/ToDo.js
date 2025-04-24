@@ -27,7 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
       id: ++idCounter,
       text: `Sample Task ${i + 1}`,
       checked: Math.random() < 0.3,
-      taskStatus: Math.random() < 0.3 ? "completed" : "uncompleted",
     });
   }
 
@@ -66,7 +65,9 @@ function handleSearch() {
     const matchesText =
       searchText === "" || todo.text.toUpperCase().includes(searchText);
     const matchesStatus =
-      filterStatus === "all" || todo.taskStatus === filterStatus;
+      filterStatus === "all" ||
+      (filterStatus === "completed" && todo.checked) ||
+      (filterStatus === "uncompleted" && !todo.checked);
     return matchesText && matchesStatus;
   });
 
@@ -92,7 +93,6 @@ function addTodo(text) {
     id: ++idCounter,
     text: text,
     checked: false,
-    taskStatus: "uncompleted",
   };
 
   todos.push(newTodo);
@@ -117,20 +117,12 @@ function deleteTodo(id) {
   }
 }
 
-function updateTaskStatus(id, taskStatus) {
-  todos = todos.map((todo) =>
-    todo.id == id ? { ...todo, taskStatus: taskStatus } : todo
-  );
-}
-
 function toggleCheck(id) {
   todos = todos.map((todo) => {
     if (todo.id === id) {
-      const isCompleted = !todo.checked;
       return {
         ...todo,
-        checked: isCompleted,
-        taskStatus: isCompleted ? "completed" : "uncompleted",
+        checked: !todo.checked,
       };
     }
     return todo;
@@ -166,7 +158,7 @@ function renderTodos() {
   // Render each task
   currentTasks.forEach((todo) => {
     const li = document.createElement("li");
-    const isCompleted = todo.checked || todo.taskStatus === "completed";
+    const isCompleted = todo.checked;
 
     // Checkbox
     const checkbox = document.createElement("input");
@@ -182,7 +174,7 @@ function renderTodos() {
     // Task Status
     const spanStatus = document.createElement("span");
     spanStatus.className = `todo-status ${isCompleted ? "completed" : ""}`;
-    spanStatus.textContent = todo.taskStatus;
+    spanStatus.textContent = isCompleted ? "completed" : "uncompleted";
 
     // Edit Button
     const editBtn = document.createElement("button");
@@ -225,6 +217,3 @@ function updatePaginationInfo() {
   nextBtn.disabled = currentPage === totalPages || totalPages === 0;
   lastBtn.disabled = currentPage === totalPages || totalPages === 0;
 }
-
-// Initialize the app
-init();
