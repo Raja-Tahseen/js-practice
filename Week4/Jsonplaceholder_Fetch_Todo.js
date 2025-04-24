@@ -144,6 +144,49 @@ function updateTodo(text) {
     .catch((error) => console.error("Error updating todo:", error));
 }
 
+function deleteTodo(id) {
+  fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
+    method: "DELETE",
+  })
+    .then(() => {
+      todos = todos.filter((todo) => todo.id !== id);
+      if (currentEditingId === id) {
+        actionBtn.textContent = "Add";
+        currentEditingId = null;
+      }
+      handleSearch();
+    })
+    .catch((error) => console.error("Error deleting todo:", error));
+}
+
+function toggleCheck(id) {
+  const todo = todos.find((t) => t.id === id);
+  if (!todo) return;
+
+  const newStatus = !todo.checked;
+
+  fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      id: id,
+      title: todo.text,
+      completed: newStatus,
+      userId: 1,
+    }),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+  })
+    .then((response) => response.json())
+    .then((updatedTodo) => {
+      todos = todos.map((t) =>
+        t.id === id ? { ...t, checked: updatedTodo.completed } : t
+      );
+      handleSearch();
+    })
+    .catch((error) => console.error("Error updating status:", error));
+}
+
 function renderTodos() {
   todoList.innerHTML = "";
 
