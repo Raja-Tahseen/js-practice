@@ -86,6 +86,64 @@ function handleAction() {
   todoInput.value = "";
 }
 
+function addTodo(text) {
+  fetch("https://jsonplaceholder.typicode.com/todos", {
+    method: "POST",
+    body: JSON.stringify({
+      title: text,
+      completed: false,
+      userId: 1,
+    }),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+  })
+    .then((response) => response.json())
+    .then((newTodo) => {
+      todos.push({
+        id: newTodo.id,
+        text: newTodo.title,
+        checked: newTodo.completed,
+      });
+      handleSearch();
+    })
+    .catch((error) => console.error("Error adding todo:", error));
+}
+
+function updateTodo(text) {
+  const todo = todos.find((t) => t.id === currentEditingId);
+  if (!todo) return;
+
+  fetch(`https://jsonplaceholder.typicode.com/todos/${currentEditingId}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      id: currentEditingId,
+      title: text,
+      completed: todo.checked,
+      userId: 1,
+    }),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+  })
+    .then((response) => response.json())
+    .then((updatedTodo) => {
+      todos = todos.map((t) =>
+        t.id === currentEditingId
+          ? {
+              id: updatedTodo.id,
+              text: updatedTodo.title,
+              checked: updatedTodo.completed,
+            }
+          : t
+      );
+      actionBtn.textContent = "Add";
+      currentEditingId = null;
+      handleSearch();
+    })
+    .catch((error) => console.error("Error updating todo:", error));
+}
+
 function renderTodos() {
   todoList.innerHTML = "";
 
