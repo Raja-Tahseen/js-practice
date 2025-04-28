@@ -1,0 +1,259 @@
+// DOM Elements
+const todoInput = document.getElementById("todo-Input");
+const todoInputSearch = document.getElementById("todoInputSearch");
+const actionButton = document.getElementById("actionButton");
+const todoList = document.getElementById("todoList");
+const statusFilter = document.getElementById("statusFilter");
+const searchButton = document.getElementById("searchButton");
+const firstButton = document.getElementById("firstButton");
+const previousButton = document.getElementById("previousButton");
+const nextButton = document.getElementById("nextButton");
+const lastButton = document.getElementById("lastButton");
+const pageInfo = document.getElementById("pageInfo");
+
+// Variables
+let currentEditingId = null;
+let todos = []; //To store data fetched from remote server
+let currentPage = 1;
+const tasksPerPage = 10;
+let filteredTodos = []; //To store data for local search, filter and pagination
+const apiUrl = "https://jsonplaceholder.typicode.com/todos";
+
+// Initialize
+document.addEventListener("DOMContentLoaded", () => {
+  fetch(apiUrl)
+    .then((response) => response.json())
+    .then((data) => {
+      todos = data.map((todo) => ({
+        id: todo.id,
+        text: todo.title,
+        checked: todo.completed,
+      }));
+      filteredTodos = [...todos];
+      renderTodos();
+    })
+    .catch((error) => console.error("Error fetching todos:", error));
+});
+
+// Event Listeners
+searchButton.addEventListener("click", handleSearch);
+actionButton.addEventListener("click", handleAction);
+firstButton.addEventListener("click", () => {
+  currentPage = 1;
+  renderTodos();
+});
+previousButton.addEventListener("click", () => {
+  currentPage = Math.max(1, currentPage - 1);
+  renderTodos();
+});
+nextButton.addEventListener("click", () => {
+  const totalPages = Math.ceil(filteredTodos.length / tasksPerPage);
+  currentPage = Math.min(totalPages, currentPage + 1);
+  renderTodos();
+});
+lastButton.addEventListener("click", () => {
+  currentPage = Math.ceil(filteredTodos.length / tasksPerPage);
+  renderTodos();
+});
+
+// Functions
+function handleSearch() {
+  const searchText = todoInputSearch.value.toUpperCase();
+  const filterStatus = statusFilter.value;
+
+  filteredTodos = todos.filter((todo) => {
+    const matchesText =
+      searchText === "" || todo.text.toUpperCase().includes(searchText);
+    const matchesStatus =
+      filterStatus === "all" ||
+      (filterStatus === "completed" && todo.checked) ||
+      (filterStatus === "uncompleted" && !todo.checked);
+    return matchesText && matchesStatus;
+  });
+
+  currentPage = 1;
+  renderTodos();
+}
+
+function handleAction() {
+  const text = todoInput.value.trim();
+  if (!text) return;
+
+  if (actionButton.textContent === "Add") {
+    addTodo(text);
+  } else {
+    updateTodo(text);
+  }
+  todoInput.value = "";
+}
+
+function addTodo(text) {
+  fetch(apiUrl, {
+    method: "POST",
+    body: JSON.stringify({
+      title: text,
+      completed: false,
+      userId: 1,
+    }),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+  })
+    .then((response) => response.json())
+    .then((newTodo) => {
+      todos.unshift({
+        id: newTodo.id,
+        text: newTodo.title,
+        checked: newTodo.completed,
+      });
+      handleSearch();
+    })
+    .catch((error) => console.error("Error adding todo:", error));
+}
+
+function updateTodo(text) {
+  const todo = todos.find((t) => t.id === currentEditingId);
+  if (!todo) return;
+
+  fetch(`https://jsonplaceholder.typicode.com/todos/${currentEditingId}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      id: currentEditingId,
+      title: text,
+      completed: todo.checked,
+      userId: 1,
+    }),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+  })
+    .then((response) => response.json())
+    .then((updatedTodo) => {
+      todos = todos.map((t) =>
+        t.id === currentEditingId
+          ? {
+              id: updatedTodo.id,
+              text: updatedTodo.title,
+              checked: updatedTodo.completed,
+            }
+          : t
+      );
+      actionButton.textContent = "Add";
+      currentEditingId = null;
+      handleSearch();
+    })
+    .catch((error) => console.error("Error updating todo:", error));
+}
+
+function deleteTodo(id) {
+  fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
+    method: "DELETE",
+  })
+    .then(() => {
+      todos = todos.filter((todo) => todo.id !== id);
+      if (currentEditingId === id) {
+        actionButton.textContent = "Add";
+        currentEditingId = null;
+      }
+      handleSearch();
+    })
+    .catch((error) => console.error("Error deleting todo:", error));
+}
+
+function toggleCheck(id) {
+  const todo = todos.find((t) => t.id === id);
+  if (!todo) return;
+
+  const newStatus = !todo.checked;
+
+  fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      id: id,
+      title: todo.text,
+      completed: newStatus,
+      userId: 1,
+    }),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+  })
+    .then((response) => response.json())
+    .then((updatedTodo) => {
+      todos = todos.map((t) =>
+        t.id === id ? { ...t, checked: updatedTodo.completed } : t
+      );
+      handleSearch();
+    })
+    .catch((error) => console.error("Error updating status:", error));
+}
+
+function renderTodos() {
+  todoList.innerHTML = "";
+
+  if (todos.length === 0) {
+    todoList.innerHTML = "<li>Loading tasks...</li>";
+    return;
+  }
+
+  if (filteredTodos.length === 0) {
+    todoList.innerHTML = "<li>No tasks match your search criteria</li>";
+    updatePaginationInfo();
+    return;
+  }
+
+  const start = (currentPage - 1) * tasksPerPage;
+  const end = start + tasksPerPage;
+  const currentTasks = filteredTodos.slice(start, end);
+
+  currentTasks.forEach((todo) => {
+    const li = document.createElement("li");
+    const isCompleted = todo.checked;
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = isCompleted;
+    checkbox.addEventListener("change", () => toggleCheck(todo.id));
+
+    const span = document.createElement("span");
+    span.className = `todo-text ${isCompleted ? "completed" : ""}`;
+    span.textContent = todo.text;
+
+    const spanStatus = document.createElement("span");
+    spanStatus.className = `todo-status ${isCompleted ? "completed" : ""}`;
+    spanStatus.textContent = isCompleted ? "completed" : "uncompleted";
+
+    const editBtn = document.createElement("button");
+    editBtn.className = "editBtn";
+    editBtn.textContent = "Edit";
+    editBtn.addEventListener("click", () => {
+      todoInput.value = todo.text;
+      actionButton.textContent = "Update";
+      currentEditingId = todo.id;
+    });
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Delete";
+    deleteBtn.addEventListener("click", () => deleteTodo(todo.id));
+
+    li.appendChild(checkbox);
+    li.appendChild(span);
+    li.appendChild(spanStatus);
+    li.appendChild(editBtn);
+    li.appendChild(deleteBtn);
+
+    todoList.appendChild(li);
+  });
+
+  updatePaginationInfo();
+}
+
+function updatePaginationInfo() {
+  const totalPages = Math.ceil(filteredTodos.length / tasksPerPage);
+  pageInfo.textContent = `Page ${currentPage} of ${totalPages} (${filteredTodos.length} tasks)`;
+
+  firstButton.disabled = currentPage === 1;
+  previousButton.disabled = currentPage === 1;
+  nextButton.disabled = currentPage === totalPages || totalPages === 0;
+  lastButton.disabled = currentPage === totalPages || totalPages === 0;
+}
